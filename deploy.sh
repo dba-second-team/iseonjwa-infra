@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# 사용법: ./deploy.sh <서비스명> <태그 변수명> <태그>
+if [ $# -ne 3 ]; then
+  echo "사용법: $0 <서비스명> <태그 변수명> <태그>" >&2
+  exit 1
+fi
+
 set -euo pipefail
 
 SERVICE="$1"
