@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   backend:
     image: ghcr.io/dba-second-team/iseonjwa-be:${BE_TAG:-latest}
@@ -5,12 +11,14 @@ services:
     expose:
       - "8080"
     restart: unless-stopped
+    logging: *default-logging
 
   frontend:
     image: ghcr.io/dba-second-team/iseonjwa-fe:${FE_TAG:-latest}
     expose:
       - "80"
     restart: unless-stopped
+    logging: *default-logging
 
   gateway:
     image: nginx:stable-alpine
@@ -22,3 +30,4 @@ services:
       - backend
       - frontend
     restart: unless-stopped
+    logging: *default-logging
