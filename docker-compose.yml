@@ -5,13 +5,28 @@ x-logging: &default-logging
     max-file: "3"
 
 services:
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction", "--save", "", "--appendonly", "no"]
+    expose:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    logging: *default-logging
+
   backend:
     image: ghcr.io/dba-second-team/iseonjwa-be:${BE_TAG:-latest}
     env_file: .env
-    expose:
-      - "8080"
-    restart: unless-stopped
-    logging: *default-logging
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+    depends_on:
+      redis:
+        condition: service_healthy
 
   frontend:
     image: ghcr.io/dba-second-team/iseonjwa-fe:${FE_TAG:-latest}
