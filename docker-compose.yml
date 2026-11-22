@@ -24,9 +24,13 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: "6379"
+    expose:
+      - "8080"
     depends_on:
       redis:
         condition: service_healthy
+    restart: unless-stopped
+    logging: *default-logging
 
   frontend:
     image: ghcr.io/dba-second-team/iseonjwa-fe:${FE_TAG:-latest}
